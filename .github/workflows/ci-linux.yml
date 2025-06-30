@@ -1,0 +1,49 @@
+name: CI Linux - Build Raylib Project
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cloner le dépôt
+        uses: actions/checkout@v3
+
+      - name: Installer les dépendances système
+        run: |
+          sudo apt update
+          sudo apt install -y cmake build-essential \
+            libasound2-dev libx11-dev libxcursor-dev \
+            libxrandr-dev libxi-dev libgl1-mesa-dev \
+            libxinerama-dev libxss-dev libwayland-dev \
+            libpulse-dev libxext-dev git
+
+      - name: Cloner et installer Raylib
+        run: |
+          git clone https://github.com/raysan5/raylib.git
+          cd raylib
+          mkdir build && cd build
+          cmake ..
+          make
+          sudo make install
+
+      - name: Créer le dossier build
+        run: mkdir build
+
+      - name: Configurer le projet avec CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compiler le projet
+        run: cmake --build build --config Release
+
+      - name: Vérifier si l'exécutable a été généré
+        run: |
+          test -f build/raylib_project && echo "Exécutable généré." || (echo "Pas d'exécutable" && exit 1)
+
+      - name: (Optionnel) Lister le contenu du build/
+        run: ls -lh build
