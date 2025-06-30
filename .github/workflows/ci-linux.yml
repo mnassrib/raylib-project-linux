@@ -43,6 +43,7 @@ jobs:
 
       - name: Vérifier si l'exécutable a été généré
         run: |
+          ls -l build
           test -f build/raylib_project && echo "Exécutable généré." || (echo "Pas d'exécutable" && exit 1)
 
       - name: (Optionnel) Lister le contenu du build/
