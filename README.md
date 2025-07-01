@@ -89,7 +89,7 @@ Ce projet est compilé automatiquement sur **Ubuntu Linux** à chaque `push` via
 ## 🧠 Ressources utiles
 
 * [Raylib – Documentation](https://www.raylib.com/)
-* [CMake – Getting Started](https://cmake.org/learning/)
+* [CMake - Documentation](https://cmake.org/documentation/)
 
 ---
 
