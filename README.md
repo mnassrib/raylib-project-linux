@@ -19,8 +19,8 @@ raylib-project-linux/
 │   └── utils.h
 ├── build/                   # Dossier de compilation (généré)
 └── .github/
-└── workflows/
-└── ci-linux.yml     # GitHub Actions (Linux)
+    └── workflows/
+        └── ci-linux.yml     # GitHub Actions (Linux)
 
 ````
 
