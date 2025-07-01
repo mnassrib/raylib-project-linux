@@ -3,24 +3,34 @@ cmake_minimum_required(VERSION 3.10)
 # Déclare le projet C en spécifiant le nom
 project(raylib_project C)
 
-# Utiliser le standard C99 (obligatoire pour Raylib)
+# Spécifie le standard C
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# Recherche Raylib dans le système (fichier raylibConfig.cmake requis)
-find_package(raylib REQUIRED)
-
-# Inclut les headers de ton projet (dans le dossier include/)
+# Inclut les headers du projet
 include_directories(include)
 
-# Liste des fichiers sources à compiler
+# Ajoute les fichiers source
 add_executable(${PROJECT_NAME}
     src/main.c
     src/player.c
     src/utils.c
 )
 
-# Lie l'exécutable aux bibliothèques nécessaires :
-# - raylib : bibliothèque principale
-# - m : bibliothèque mathématique standard (uniquement requise sous Linux)
-target_link_libraries(${PROJECT_NAME} raylib m)
+# --- Trouver Raylib et lier selon l'OS ---
+if(WIN32)
+    # Configuration spécifique à Windows
+    set(CMAKE_PREFIX_PATH "C:/raylib")  # Adapté à votre installation
+    find_package(raylib REQUIRED)
+    target_link_libraries(${PROJECT_NAME} raylib winmm) 
+    
+elseif(APPLE)
+    # macOS (Raylib doit être installé via Homebrew)
+    find_package(raylib REQUIRED)
+    target_link_libraries(${PROJECT_NAME} raylib)
+    
+elseif(UNIX)
+    # Linux ou WSL
+    find_package(raylib REQUIRED)
+    target_link_libraries(${PROJECT_NAME} raylib m)  
+endif()
