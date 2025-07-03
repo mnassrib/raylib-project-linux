@@ -60,6 +60,5 @@ elseif(UNIX)
         dl
         X11
         GL
-        GLU
     )
 endif()
