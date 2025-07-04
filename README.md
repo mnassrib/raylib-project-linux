@@ -85,6 +85,16 @@ Ce projet est compilé automatiquement sur **Ubuntu Linux** à chaque `push` via
 ![CI Status](https://github.com/mnassrib/raylib-project-linux/actions/workflows/ci-linux.yml/badge.svg)
 
 ---
+## 🚀 Télécharger l’exécutable précompilé
+
+Après chaque publication (tag Git), une version précompilée de l'exécutable est disponible :
+
+1. Accède à la page des **Releases** ici :
+   🔗 [https://github.com/mnassrib/raylib-project-linux/releases](https://github.com/mnassrib/raylib-project-linux/releases)
+2. Télécharge le fichier **raylib\_project** (ou `.exe` selon l’OS) de la dernière version.
+3. Exécute directement en local le programme sans recompiler.
+
+---
 
 ## 🧠 Ressources utiles
 
