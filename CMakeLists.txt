@@ -1,40 +1,66 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Déclare le projet C
-project(raylib_project C)
+# Définir le nom du projet à partir du nom du dossier courant
+get_filename_component(PROJ_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+project(${PROJ_NAME} C)
 
-# Standard C99
+# Spécifier la version du standard C
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# Dossier contenant les headers de votre projet (pas ceux de raylib)
+# Inclure les headers personnalisés
 include_directories(include)
 
-# Fichiers source à compiler
-add_executable(${PROJECT_NAME}
-    src/main.c
-    src/player.c
-    src/utils.c
-)
 
-# === Recherche de Raylib ===
+# === Choix des fichiers source ===
 
-# Configuration spécifique à Windows
+# Utiliser automatiquement tous les fichiers .c dans src/ sinon changer ON par OFF
+option(USE_AUTO_SOURCES "Compiler automatiquement tous les fichiers .c dans src/" ON)
+
+if(USE_AUTO_SOURCES)
+    message(STATUS "Compilation automatique des fichiers sources (.c)")
+    file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.c)
+    add_executable(${PROJECT_NAME} ${SRC_FILES})
+else()
+    message(STATUS "Compilation manuelle des fichiers sources")
+    add_executable(${PROJECT_NAME}
+        src/main.c
+        src/player.c
+        src/utils.c
+    )
+endif()
+
+
+# === Configuration de Raylib ===
+
+# Si Raylib a été installé dans un répertoire non standard sur Windows
 if(WIN32)
-    # Spécifie le chemin de Raylib si installé manuellement/modifier si besoin
+    # Spécifiez le chemin de Raylib si installé via CMake install/modifier si besoin
     set(RAYLIB_PATH "C:/raylib")
     set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${RAYLIB_PATH}")
 endif()
 
-# Recherche de la configuration CMake de Raylib
-find_package(raylib REQUIRED)
+# Détection automatique de Raylib
+find_package(raylib QUIET)
 
-# Lie Raylib à l'exécutable
-target_link_libraries(${PROJECT_NAME} raylib)
+if(raylib_FOUND)
+    message(STATUS "Raylib trouvé via find_package()")
+    target_link_libraries(${PROJECT_NAME} raylib)
+else()
+    message(STATUS "Raylib non trouvé via find_package() - fallback manuel")
 
-# === Lien avec bibliothèques système selon le système d'exploitation ===
+    if(WIN32)
+        message(STATUS "Lien manuel avec Raylib pour MinGW")
+        target_link_libraries(${PROJECT_NAME} raylib)
+    else()
+        message(SEND_ERROR "Raylib non trouvé et aucun fallback disponible (non-Windows)")
+    endif()
+endif()
+
+
+# === Lien avec bibliothèques système selon l'OS ===
+
 if(WIN32)
-    # Bibliothèques système nécessaires sous Windows
     target_link_libraries(${PROJECT_NAME}
         winmm
         gdi32
@@ -42,7 +68,6 @@ if(WIN32)
     )
 
 elseif(APPLE)
-    # macOS : frameworks requis uniquement si Raylib n’est pas installé via Homebrew
     find_library(COCOA_LIBRARY Cocoa)
     find_library(IOKIT_LIBRARY IOKit)
     find_library(COREVIDEO_LIBRARY CoreVideo)
@@ -55,8 +80,7 @@ elseif(APPLE)
         ${OPENGL_LIBRARY}
     )
 
-elseif(UNIX)
-    # Linux : si Raylib a été compilé manuellement
+elseif(UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME}
         m
         pthread

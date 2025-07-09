@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Cloner le dépôt
         uses: actions/checkout@v3
+      
+      - name: Déterminer le nom du projet
+        id: project
+        run: echo "name=$(basename $GITHUB_WORKSPACE)" >> "$GITHUB_OUTPUT"
 
       - name: Installer les dépendances système
         run: |
@@ -45,7 +49,7 @@ jobs:
       - name: Vérifier si l'exécutable a été généré
         run: |
           ls -l build
-          test -f build/raylib_project && echo "Exécutable généré." || (echo "Pas d'exécutable" && exit 1)
+          test -f build/${{ steps.project.outputs.name }} && echo "Exécutable généré." || (echo "Pas d'exécutable" && exit 1)
 
       - name: (Optionnel) Lister le contenu du build/
         run: ls -lh build
@@ -55,6 +59,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: "Release ${{ github.ref_name }}"
-          files: build/raylib_project
+          files: build/${{ steps.project.outputs.name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
